@@ -1,11 +1,18 @@
-import Axios from 'axios'
+import { JwksClient } from 'jwks-rsa'
 import jsonwebtoken from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger.mjs'
 
 const logger = createLogger('auth')
 
-const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
 
+const jwksUrl = 'https://dev-0qv7gjyhzaq7nmtp.us.auth0.com/.well-known/jwks.json'
+
+console.log(jwksUrl)
+const jwks = new JwksClient({
+  jwksUri: jwksUrl
+})
+
+console.log(jwks);
 export async function handler(event) {
   try {
     const jwtToken = await verifyToken(event.authorizationToken)

@@ -35,7 +35,12 @@ functions:
           method: get
           path: todos
           authorizer: Auth
-          cors: true
+          cors:
+            origin: "'http://localhost:3000'"  # specify allowed origins
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: false
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -206,10 +211,11 @@ resources:
       Type: AWS::ApiGateway::GatewayResponse
       Properties:
         ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"  # Use a specific origin in production
           gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,PUT,DELETE'"
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: ApiGatewayRestApi
+
     # TODO: Add any necessary AWS resources
