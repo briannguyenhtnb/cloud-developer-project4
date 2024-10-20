@@ -77,7 +77,7 @@ export function Todos() {
   async function onTodoDelete(todoId) {
     try {
       const accessToken = await getAccessTokenSilently({
-        audience: `https://dev-0qv7gjyhzaq7nmtp.auth0.com/api/v2/`,
+        audience: `https://dev-0qv7gjyhzaq7nmtp.us.auth0.com/api/v2/`,
         scope: 'delete:todo'
       })
       await deleteTodo(accessToken, todoId)
@@ -91,7 +91,7 @@ export function Todos() {
     try {
       const todo = todos[pos]
       const accessToken = await getAccessTokenSilently({
-        audience: `https://dev-0qv7gjyhzaq7nmtp.auth0.com/api/v2/`,
+        audience: `https://dev-0qv7gjyhzaq7nmtp.us.auth0.com/api/v2/`,
         scope: 'write:todo'
       })
       await patchTodo(accessToken, todo.todoId, {
@@ -114,7 +114,7 @@ export function Todos() {
     navigate(`/todos/${todoId}/edit`)
   }
 
-  const { user, getAccessTokenSilently } = useAuth0()
+  const { isAuthenticated, user, getAccessTokenSilently, loginWithRedirect } = useAuth0()
   const [todos, setTodos] = useState([])
   const [loadingTodos, setLoadingTodos] = useState(true)
   const navigate = useNavigate()
@@ -127,8 +127,10 @@ export function Todos() {
   useEffect(() => {
     async function foo() {
       try {
+        console.log(isAuthenticated)
+        console.log("Before checking accesstoken")
         const accessToken = await getAccessTokenSilently({
-          audience: `https://dev-0qv7gjyhzaq7nmtp.auth0.com/api/v2/`,
+          audience: `https://dev-0qv7gjyhzaq7nmtp.us.auth0.com/api/v2/`,
           scope: 'read:todos'
         })
         console.log('Access token: ' + accessToken)
@@ -136,7 +138,13 @@ export function Todos() {
         setTodos(todos)
         setLoadingTodos(false)
       } catch (e) {
-        alert(`Failed to fetch todos: ${e.message}`)
+        if (e.error === 'login_required') {
+          console.log('User needs to log in again.')
+          // Redirect the user to login
+          // loginWithRedirect()
+        } else {
+          console.error('Error getting access token:', e)
+        }
       }
     }
     foo()
